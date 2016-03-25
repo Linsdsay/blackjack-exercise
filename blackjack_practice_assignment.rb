@@ -64,8 +64,7 @@
 #   received on your hit. It should then continue to offer you additional advice until the
 #   hand is over (i.e. until it tells you do something other than hit.)
 
-# my hard hash is equal to an array as the key and the value is hit.
-# first number in the array will be the player total of the cards, second number is the dealers card.
+
 hash_hard = {[5,2] => "H", [5,3] => "H", [5,4] => "H", [5,5] => "H", [5,6] => "H",
 [5,7] =>"H", [5,8] => "H", [5,9] => "H", [5,10] => "H", [5,"A"] => "H", [6,2] => "H",
 [6,3] => "H", [6,4] => "H", [6,5] => "H", [6,6] => "H", [6,7] => "H", [6,8]=> "H",
@@ -86,6 +85,7 @@ hash_hard = {[5,2] => "H", [5,3] => "H", [5,4] => "H", [5,5] => "H", [5,6] => "H
 [15,4] => "S", [15,5] => "S", [15,6] => "S", [15,7] => "H", [15,8] => "H", [15,9] => "H", [15,10] => "H",
 [15,"A"] => "H", [16,2] => "S", [16,3] => "S", [16,4] => "S", [16,5] => "S", [16,6] => "S", [16,7] => "H",
 [16,8] => "H", [16,9] => "H", [16,10] => "H", [16,"A"] => "H",
+
 
 [17,2] => "S",
 [17,3] => "S",
@@ -368,72 +368,77 @@ hash_symbols = {
   "Ds" => "Double if possible, otherwise Stand"
 }
 
-
-# puts hash_hard[[5,2]]
-
-
-puts "Please enter your first card (enter 10 for either jack, queen, king and A for ace)."
-first_card = gets.chomp
-  if first_card.to_i.to_s == first_card.to_s  # use and define a method to check to see if is a number
-    puts "we have a number"
-    first_card_number = first_card.to_i
-  elsif first_card == "A"
-    puts "we have an ace."
-    first_card_number = 11
-  else
-    puts "not a valid input, try again."
-  end
-
-#loop do # this loop is now breaking my code... otherwise it was working. come back to loop
-  puts "Please enter your second card"
-  second_card = gets.chomp
-  if second_card.to_i.to_s == second_card.to_s  # use and define a method to check to see if is a number
-    puts "we have a number"
-    second_card_number = second_card.to_i
-    # break
-  elsif second_card == "A"
-    puts "we have an ace."
-    second_card_number = 11
-    # break
-  else
-    puts "not a valid input, try again."
-    # need to have it repeat this and ask again. adding a loop here messing me up...
-  end
-# end
-
-puts "Please enter the dealer's card"
-dealers_card = gets.chomp
-if dealers_card.to_i.to_s == dealers_card.to_s  # use and define a method to check to see if is a number
-  puts "we have a number"
-  dealers_card_number = dealers_card.to_i
-elsif dealers_card  == "A"
-  puts "we have an ace."
-  dealers_card_number = "A"
-else
-  puts "not a valid input, try again."
+def optimal_move(result)
+  puts "your optimal move is: #{result}"
 end
 
+
+
+def get_user_input(card_type)
+  loop do
+    puts "Please enter your #{card_type} (enter either 10 or J, Q, or K for jack, queeen or king) and A for ace."
+    card = gets.chomp
+    if card.to_i.to_s == card.to_s  # use and define a method to check to see if is a number
+      puts "we have a number"
+      second_card_number = card.to_i
+      return second_card_number
+      break
+    elsif card == "A"
+      puts "we have an ace."
+      second_card_number = 11
+      return second_card_number
+      break
+    elsif card == "K" || card == "Q" || card == "J"
+      second_card_number = 10
+      return second_card_number
+      break
+    else
+      puts "not a valid input, try again."
+    end
+  end
+end
+
+
+def get_dealer_input(card_type)
+  loop do
+    puts "Please enter your #{card_type} (enter either 10 or J, Q, or K for jack, queeen or king) and A for ace."
+    card = gets.chomp
+    if card.to_i.to_s == card.to_s
+      puts "we have a number"
+      second_card_number = card.to_i
+      return second_card_number
+      break
+    elsif card == "A"
+      puts "we have an ace."
+      second_card_number = "A"
+      return second_card_number
+      break
+    elsif card == "K" || card == "Q" || card == "J"
+      second_card_number = 10
+      return second_card_number
+      break
+    else
+      puts "not a valid input, try again."
+    end
+  end
+end
+
+
+
+
+
 total_num_cards = first_card_number + second_card_number
-
-#puts hash_hard[[total_num_cards, dealers_card_number]]
-
-if first_card != "A" && second_card != "A"
-  hash_hard_result = hash_hard[[total_num_cards, dealers_card_number]]  # should make this a method.
-  puts "your optimal move is: #{hash_symbols[hash_hard_result]}"
+puts total_num_cards
+if first_card_number != "A" && second_card_number != "A"
+  hash_hard_result = hash_hard[[total_num_cards, dealers_card]]
+  optimal_move(hash_symbols[hash_hard_result])
 elsif first_card == "A" && second_card != "A"
-  hash_soft_results = hash_soft[[total_num_cards, dealers_card_number]]
-  puts hash_soft_results
-  puts "your optimal move is: #{hash_symbols[hash_soft_results]}"
+  hash_soft_results = hash_soft[[total_num_cards, dealers_card]]
+  optimal_move(hash_symbols[hash_soft_results])
 elsif first_card != "A" && second_card == "A"
-  hash_soft_results_reverse = hash_soft[[total_num_cards, dealers_card_number]]
-  puts hash_soft_results_reverse
-  puts "your optimal move is: #{hash_symbols[hash_soft_results_reverse]}"
-elsif first_card == "A" && second_card == "A" && dealers_card_number == "A"
-  hash_triplethreat_results = hash_pair[[first_card, dealers_card_number]]
-  puts hash_triplethreat_results
-  puts "your optimal move is: #{hash_symbols[hash_triplethreat_results]}"
+  hash_soft_results_reverse = hash_soft[[total_num_cards, dealers_card]]
+  optimal_move(hash_symbols[hash_soft_results_reverse])
 else first_card == second_card
-  hash_pair_results = hash_pair[[first_card_number, dealers_card_number]]
-  puts hash_pair_results
-  puts "your optimal move is: #{hash_symbols[hash_triplethreat_results]}"
+  hash_pair_results = hash_pair[[first_card_number, dealers_card]]
+  optimal_move(hash_symbols[hash_triplethreat_results])
 end
